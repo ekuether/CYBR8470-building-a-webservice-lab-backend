@@ -218,3 +218,92 @@ class DogDetail(APIView):
         dog.delete()
         return Response({'success': True}, status=status.HTTP_200_OK)
 
+class BreedList(APIView):
+    permission_classes = (AllowAny,)
+    parser_classes = (parsers.JSONParser,parsers.FormParser)
+    renderer_classes = (renderers.JSONRenderer, )
+
+    def get(self, request, format=None):
+        breeds = Breed.objects.all()
+        json_data = serializers.serialize('json', breed)
+        content = {'dogs': json_data}
+        return HttpResponse(json_data, content_type='json')
+
+    def post(self, request):
+        print 'REQUEST DATA'
+        print str(request.data)
+
+        name = request.data.get('name')
+        size = request.data.get('size')
+        friendliness = int(request.data.get('friendliness'))
+        trainability = int(request.data.get('trainability'))
+        sheddingamount = int(request.data.get('sheddingamount'))
+        exerciseneeds = int(request.data.get('exerciseneeds'))
+
+        print 'test1'
+        newBreed = Breed(
+            name=name,
+            size = size[0],
+            friendliness = friendliness,
+            trainability = trainability,
+            sheddingamount = sheddingamount,
+            exerciseneeds = exerciseneeds
+        )
+
+        print 'test2'
+        try:
+            newDog.clean_fields()
+            if not 1 <= newBreed.friendliness <= 5 or not 1 <= trainability <= 5 or not 1 <= sheddingamount <= 5 or not 1 <= exerciseneeds <= 5:
+                return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            print e
+            return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
+
+        newDog.save()
+        print 'New Dog named: ' + name
+        return Response({'success': True}, status=status.HTTP_200_OK)
+
+class BreedDetail(APIView):
+    permission_classes = (AllowAny,)
+    parser_classes = (parsers.JSONParser,parsers.FormParser)
+    renderer_classes = (renderers.JSONRenderer, )
+
+    def get_object(self, pk):
+        try:
+            return Breed.objects.get(pk=pk)
+        except Breed.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        breed = self.get_object(pk)
+        json_data = serializers.serialize('json', breed)
+        content = {'breed': json_data}
+        return HttpResponse(json_data, content_type='json')
+    
+    def put(self, request, pk, format=None):
+        breed = self.get_object(pk)
+
+        breed.name = request.data.get('name')
+        breed.age = int(request.data.get('age'))
+        breed.breed = request.data.get('breed')
+        breed.gender = request.data.get('gender')
+        breed.color = request.data.get('color')
+        breed.favoritefood = request.data.get('favoritefood')
+        breed.favortietoy = request.data.get('favortietoy')
+
+        try:
+            breed.clean_fields()
+            if not 1 <= newBreed.friendliness <= 5 or not 1 <= trainability <= 5 or not 1 <= sheddingamount <= 5 or not 1 <= exerciseneeds <= 5:
+                return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            print e
+            return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
+
+        breed.save()
+        return Response({'success': True}, status=status.HTTP_200_OK)
+
+
+    def delete(self, request, pk, format=None):
+        breed = self.get_object(pk)
+        breed.delete()
+        return Response({'success': True}, status=status.HTTP_200_OK)
