@@ -151,7 +151,7 @@ class DogList(APIView):
         gender = request.data.get('gender')
         color = request.data.get('color')
         favoritefood = request.data.get('favoritefood')
-        favoritetoy = request.data.get('favoritetoy')
+        favortietoy = request.data.get('favortietoy')
 
         print 'test1'
         newDog = Dog(
@@ -161,7 +161,7 @@ class DogList(APIView):
             gender=gender,
             color=color,
             favoritefood=favoritefood,
-            favoritetoy=favoritetoy
+            favortietoy=favortietoy
         )
 
         print 'test2'
@@ -174,7 +174,6 @@ class DogList(APIView):
         newDog.save()
         print 'New Dog named: ' + name
         return Response({'success': True}, status=status.HTTP_200_OK)
-
 
 class DogDetail(APIView):
     permission_classes = (AllowAny,)
@@ -202,7 +201,7 @@ class DogDetail(APIView):
         dog.gender = request.data.get('gender')
         dog.color = request.data.get('color')
         dog.favoritefood = request.data.get('favoritefood')
-        dog.favoritetoy = request.data.get('favoritetoy')
+        dog.favortietoy = request.data.get('favortietoy')
 
         try:
             dog.clean_fields()
@@ -218,3 +217,4 @@ class DogDetail(APIView):
         dog = self.get_object(pk)
         dog.delete()
         return Response({'success': True}, status=status.HTTP_200_OK)
+

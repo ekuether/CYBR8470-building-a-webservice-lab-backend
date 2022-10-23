@@ -37,7 +37,18 @@ class Dog(models.Model):
     gender = models.CharField(max_length=1)
     color = models.CharField(max_length=100)
     favoritefood = models.CharField(max_length=100)
-    favoritetoy = models.CharField(max_length=100)
+    favortietoy = models.CharField(max_length=100)
 
     def __str__(self):
         return str(self.name) + str(self.breed)
+
+class Breed(models.Model):
+    name = models.CharField(max_length=100, blank=False)
+    size = models.CharField(max_length=1,choices=[('T','Tiny'),('S','Small'),('M','Medium'),('L','Large')])
+    friendliness = models.IntegerField()
+    trainability = models.IntegerField()
+    sheddingamount = models.IntegerField()
+    exerciseneeds = models.IntegerField()
+
+    def __str__(self):
+        return str(self.name)
