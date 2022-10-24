@@ -255,14 +255,14 @@ class BreedList(APIView):
         )
 
         try:
-            newDog.clean_fields()
+            newBreed.clean_fields()
             if not 1 <= newBreed.friendliness <= 5 or not 1 <= trainability <= 5 or not 1 <= sheddingamount <= 5 or not 1 <= exerciseneeds <= 5:
                 return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as e:
             print e
             return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
 
-        newDog.save()
+        newBreed.save()
         print 'New Breed named: ' + name
         return Response({'success': True}, status=status.HTTP_200_OK)
 
@@ -283,7 +283,7 @@ class BreedDetail(APIView):
     def get(self, request, format=None):
         pk = self.get_pk(request)
         breed = self.get_object(pk)
-        json_data = serializers.serialize('json', breed)
+        json_data = serializers.serialize('json', [breed])
         content = {'breed': json_data}
         return HttpResponse(json_data, content_type='json')
     
@@ -292,16 +292,15 @@ class BreedDetail(APIView):
         breed = self.get_object(pk)
 
         breed.name = request.data.get('name')
-        breed.age = int(request.data.get('age'))
-        breed.breed = request.data.get('breed')
-        breed.gender = request.data.get('gender')
-        breed.color = request.data.get('color')
-        breed.favoritefood = request.data.get('favoritefood')
-        breed.favortietoy = request.data.get('favortietoy')
+        breed.size = request.data.get('size')[0]
+        breed.friendliness = int(request.data.get('friendliness'))
+        breed.trainability = int(request.data.get('trainability'))
+        breed.sheddingamount = int(request.data.get('sheddingamount'))
+        breed.exerciseneeds = int(request.data.get('exerciseneeds'))
 
         try:
             breed.clean_fields()
-            if not 1 <= newBreed.friendliness <= 5 or not 1 <= trainability <= 5 or not 1 <= sheddingamount <= 5 or not 1 <= exerciseneeds <= 5:
+            if not 1 <= breed.friendliness <= 5 or not 1 <= breed.trainability <= 5 or not 1 <= breed.sheddingamount <= 5 or not 1 <= breed.exerciseneeds <= 5:
                 return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as e:
             print e
