@@ -153,7 +153,6 @@ class DogList(APIView):
         favoritefood = request.data.get('favoritefood')
         favortietoy = request.data.get('favortietoy')
 
-        print 'test1'
         newDog = Dog(
             name=name,
             age=age,
@@ -164,7 +163,6 @@ class DogList(APIView):
             favortietoy=favortietoy
         )
 
-        print 'test2'
         try:
             newDog.clean_fields()
         except ValidationError as e:
@@ -186,13 +184,19 @@ class DogDetail(APIView):
         except Dog.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk, format=None):
+    def get_pk(self, request):
+        return int(request.META['RAW_URI'].split('/')[3])
+
+
+    def get(self, request, format=None):
+        pk = self.get_pk(request)
         dog = self.get_object(pk)
-        json_data = serializers.serialize('json', dog)
+        json_data = serializers.serialize('json', [dog])
         content = {'dog': json_data}
         return HttpResponse(json_data, content_type='json')
     
-    def put(self, request, pk, format=None):
+    def put(self, request, format=None):
+        pk = self.get_pk(request)
         dog = self.get_object(pk)
 
         dog.name = request.data.get('name')
@@ -213,7 +217,8 @@ class DogDetail(APIView):
         return Response({'success': True}, status=status.HTTP_200_OK)
 
 
-    def delete(self, request, pk, format=None):
+    def delete(self, request, format=None):
+        pk = self.get_pk(request)
         dog = self.get_object(pk)
         dog.delete()
         return Response({'success': True}, status=status.HTTP_200_OK)
@@ -225,7 +230,7 @@ class BreedList(APIView):
 
     def get(self, request, format=None):
         breeds = Breed.objects.all()
-        json_data = serializers.serialize('json', breed)
+        json_data = serializers.serialize('json', breeds)
         content = {'dogs': json_data}
         return HttpResponse(json_data, content_type='json')
 
@@ -240,7 +245,6 @@ class BreedList(APIView):
         sheddingamount = int(request.data.get('sheddingamount'))
         exerciseneeds = int(request.data.get('exerciseneeds'))
 
-        print 'test1'
         newBreed = Breed(
             name=name,
             size = size[0],
@@ -250,7 +254,6 @@ class BreedList(APIView):
             exerciseneeds = exerciseneeds
         )
 
-        print 'test2'
         try:
             newDog.clean_fields()
             if not 1 <= newBreed.friendliness <= 5 or not 1 <= trainability <= 5 or not 1 <= sheddingamount <= 5 or not 1 <= exerciseneeds <= 5:
@@ -260,7 +263,7 @@ class BreedList(APIView):
             return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
 
         newDog.save()
-        print 'New Dog named: ' + name
+        print 'New Breed named: ' + name
         return Response({'success': True}, status=status.HTTP_200_OK)
 
 class BreedDetail(APIView):
@@ -274,13 +277,18 @@ class BreedDetail(APIView):
         except Breed.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk, format=None):
+    def get_pk(self, request):
+        return int(request.META['RAW_URI'].split('/')[3])
+
+    def get(self, request, format=None):
+        pk = self.get_pk(request)
         breed = self.get_object(pk)
         json_data = serializers.serialize('json', breed)
         content = {'breed': json_data}
         return HttpResponse(json_data, content_type='json')
     
-    def put(self, request, pk, format=None):
+    def put(self, request, format=None):
+        pk = self.get_pk(request)
         breed = self.get_object(pk)
 
         breed.name = request.data.get('name')
@@ -303,7 +311,8 @@ class BreedDetail(APIView):
         return Response({'success': True}, status=status.HTTP_200_OK)
 
 
-    def delete(self, request, pk, format=None):
+    def delete(self, request, format=None):
+        pk = self.get_pk(request)
         breed = self.get_object(pk)
         breed.delete()
         return Response({'success': True}, status=status.HTTP_200_OK)
